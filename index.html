@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CloudTask v1.0</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #fafafa;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #111827;
+      --accent-soft: #f3f4f6;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      color: var(--text);
+    }
+
+    .app {
+      width: 100%;
+      max-width: 640px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 32px 32px 24px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .version {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--accent-soft);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .content {
+      padding: 28px 32px 32px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      background: var(--card);
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+    }
+
+    button {
+      cursor: pointer;
+      transition: background .15s, color .15s, transform .05s;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    #addTaskBtn {
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      padding: 12px 22px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    #addTaskBtn:hover {
+      background: #000;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .filter-btn:hover {
+      background: var(--accent-soft);
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .task-list {
+      list-style: none;
+    }
+
+    .task {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      transition: border-color .15s;
+    }
+
+    .task:hover {
+      border-color: #d1d5db;
+    }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .task-left input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .task-text {
+      font-size: 15px;
+    }
+
+    .task.completed .task-text {
+      text-decoration: line-through;
+      color: #9ca3af;
+    }
+
+    .delete-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .delete-btn:hover {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .summary {
+      margin-top: 22px;
+      background: var(--accent-soft);
+      color: var(--text);
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #9ca3af;
+      padding: 25px;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      border-top: 1px solid var(--border);
+      padding: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    footer .author {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 16px;
+      }
+
+      .header,
+      .content {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .input-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <h1>☁ CloudTask</h1>
+    <p>Gestor de tareas interactivo</p>
+    <span class="version">Versión 1.0</span>
+  </div>
+
+  <div class="content">
+
+    <div class="input-group">
+      <input id="taskInput" type="text" placeholder="Escribe una nueva tarea...">
+      <button id="addTaskBtn">Agregar</button>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">Todas</button>
+      <button class="filter-btn" data-filter="pending">Pendientes</button>
+      <button class="filter-btn" data-filter="completed">Completadas</button>
+    </div>
+
+    <ul id="taskList" class="task-list"></ul>
+
+    <div class="summary">
+      Tareas pendientes:
+      <strong id="pendingCount">0</strong>
+    </div>
+
+  </div>
+
+  <footer>
+    CloudTask v1.0 · Práctica de Computación en la Nube<br>
+    Desarrollado por: <span class="author">JOSE RODOLFO ZAMBRANO CASTRO</span>
+  </footer>
+
+</div>
+
+<script>
+  const taskInput = document.getElementById("taskInput");
+  const addTaskBtn = document.getElementById("addTaskBtn");
+  const taskList = document.getElementById("taskList");
+  const pendingCount = document.getElementById("pendingCount");
+  const filterButtons = document.querySelectorAll(".filter-btn");
+
+  let currentFilter = "all";
+
+  let tasks = [
+    { id: 1, text: "Subir proyecto a GitHub", completed: false },
+    { id: 2, text: "Desplegar aplicación en Vercel", completed: false },
+    { id: 3, text: "Probar aplicación desde el teléfono", completed: true }
+  ];
+
+  function renderTasks() {
+    taskList.innerHTML = "";
+
+    const filteredTasks = tasks.filter(task => {
+      if (currentFilter === "pending") return !task.completed;
+      if (currentFilter === "completed") return task.completed;
+      return true;
+    });
+
+    if (filteredTasks.length === 0) {
+      taskList.innerHTML =
+        '<li class="empty">No hay tareas para mostrar</li>';
+    }
+
+    filteredTasks.forEach(task => {
+      const li = document.createElement("li");
+
+      li.className = "task";
+
+      if (task.completed) {
+        li.classList.add("completed");
+      }
+
+      li.innerHTML = `
+        <div class="task-left">
+          <input
+            type="checkbox"
+            ${task.completed ? "checked" : ""}
+            onchange="toggleTask(${task.id})"
+          >
+
+          <span class="task-text">
+            ${task.text}
+          </span>
+        </div>
+
+        <button
+          class="delete-btn"
+          onclick="deleteTask(${task.id})"
+        >
+          Eliminar
+        </button>
+      `;
+
+      taskList.appendChild(li);
+    });
+
+    updatePendingCount();
+  }
+
+  function addTask() {
+    const text = taskInput.value.trim();
+
+    if (text === "") {
+      alert("Escribe una tarea.");
+      return;
+    }
+
+    tasks.push({
+      id: Date.now(),
+      text,
+      completed: false
+    });
+
+    taskInput.value = "";
+
+    renderTasks();
+  }
+
+  function toggleTask(id) {
+    tasks = tasks.map(task =>
+      task.id === id
+        ? { ...task, completed: !task.completed }
+        : task
+    );
+
+    renderTasks();
+  }
+
+  function deleteTask(id) {
+    tasks = tasks.filter(task => task.id !== id);
+    renderTasks();
+  }
+
+  function updatePendingCount() {
+    pendingCount.textContent =
+      tasks.filter(task => !task.completed).length;
+  }
+
+  addTaskBtn.addEventListener("click", addTask);
+
+  taskInput.addEventListener("keypress", event => {
+    if (event.key === "Enter") addTask();
+  });
+
+  filterButtons.forEach(button => {
+    button.addEventListener("click", function() {
+      filterButtons.forEach(btn =>
+        btn.classList.remove("active")
+      );
+
+      this.classList.add("active");
+      currentFilter = this.dataset.filter;
+
+      renderTasks();
+    });
+  });
+
+  renderTasks();
+</script>
+
+</body>
+</html>
