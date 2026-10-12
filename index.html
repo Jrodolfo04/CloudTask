@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CloudTask v1.0</title>
+  <title>CloudTask v1.1</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,11 +41,11 @@
 
     .app {
       width: 100%;
-      max-width: 640px;
+      max-width: 760px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.04);
       overflow: hidden;
     }
 
@@ -85,13 +85,14 @@
     }
 
     .input-group {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 160px 110px;
       gap: 10px;
       margin-bottom: 24px;
     }
 
-    input[type="text"] {
-      flex: 1;
+    input[type="text"],
+    select {
       padding: 12px 14px;
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -102,9 +103,10 @@
       transition: border-color .15s, box-shadow .15s;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus,
+    select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+      box-shadow: 0 0 0 3px rgba(17,24,39,.08);
     }
 
     button {
@@ -118,22 +120,30 @@
 
     #addTaskBtn {
       border: none;
-      border-radius: 10px;
       background: var(--accent);
       color: white;
-      padding: 12px 22px;
+      border-radius: 10px;
       font-size: 15px;
       font-weight: 600;
+      padding: 12px;
     }
 
     #addTaskBtn:hover {
       background: #000;
     }
 
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
     .filters {
       display: flex;
       gap: 8px;
-      margin-bottom: 20px;
       flex-wrap: wrap;
     }
 
@@ -155,6 +165,22 @@
       background: var(--accent);
       border-color: var(--accent);
       color: white;
+    }
+
+    .clear-btn {
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .clear-btn:hover {
+      background: var(--danger-soft);
+      border-color: #fecaca;
+      color: var(--danger);
     }
 
     .task-list {
@@ -191,6 +217,12 @@
       cursor: pointer;
     }
 
+    .task-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
     .task-text {
       font-size: 15px;
     }
@@ -200,12 +232,39 @@
       color: #9ca3af;
     }
 
+    .priority {
+      width: fit-content;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .priority-baja {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .priority-media {
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .priority-alta {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
     .delete-btn {
       border: none;
       background: transparent;
       color: var(--muted);
-      padding: 7px 12px;
       border-radius: 8px;
+      padding: 7px 12px;
       font-size: 13px;
       font-weight: 500;
     }
@@ -217,11 +276,26 @@
 
     .summary {
       margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .summary-card {
       background: var(--accent-soft);
-      color: var(--text);
+      color: var(--muted);
       padding: 14px 16px;
       border-radius: 10px;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 4px;
     }
 
     .empty {
@@ -232,8 +306,8 @@
     }
 
     footer {
-      text-align: center;
       border-top: 1px solid var(--border);
+      text-align: center;
       padding: 20px;
       color: var(--muted);
       font-size: 13px;
@@ -245,7 +319,7 @@
       font-weight: 600;
     }
 
-    @media (max-width: 600px) {
+    @media(max-width:700px) {
       body {
         padding: 16px;
       }
@@ -256,8 +330,9 @@
         padding-right: 20px;
       }
 
-      .input-group {
-        flex-direction: column;
+      .input-group,
+      .summary {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -270,33 +345,63 @@
   <div class="header">
     <h1>☁ CloudTask</h1>
     <p>Gestor de tareas interactivo</p>
-    <span class="version">Versión 1.0</span>
+    <span class="version">Versión 1.1</span>
   </div>
 
   <div class="content">
 
     <div class="input-group">
-      <input id="taskInput" type="text" placeholder="Escribe una nueva tarea...">
+
+      <input
+        id="taskInput"
+        type="text"
+        placeholder="Escribe una nueva tarea..."
+      >
+
+      <select id="prioritySelect">
+        <option value="baja">Prioridad baja</option>
+        <option value="media" selected>Prioridad media</option>
+        <option value="alta">Prioridad alta</option>
+      </select>
+
       <button id="addTaskBtn">Agregar</button>
+
     </div>
 
-    <div class="filters">
-      <button class="filter-btn active" data-filter="all">Todas</button>
-      <button class="filter-btn" data-filter="pending">Pendientes</button>
-      <button class="filter-btn" data-filter="completed">Completadas</button>
+    <div class="toolbar">
+
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">Todas</button>
+        <button class="filter-btn" data-filter="pending">Pendientes</button>
+        <button class="filter-btn" data-filter="completed">Completadas</button>
+      </div>
+
+      <button id="clearCompletedBtn" class="clear-btn">
+        Eliminar completadas
+      </button>
+
     </div>
 
     <ul id="taskList" class="task-list"></ul>
 
     <div class="summary">
-      Tareas pendientes:
-      <strong id="pendingCount">0</strong>
+
+      <div class="summary-card">
+        Total de tareas
+        <strong id="totalCount">0</strong>
+      </div>
+
+      <div class="summary-card">
+        Tareas pendientes
+        <strong id="pendingCount">0</strong>
+      </div>
+
     </div>
 
   </div>
 
   <footer>
-    CloudTask v1.0 · Práctica de Computación en la Nube<br>
+    CloudTask v1.1 · GitHub + Vercel<br>
     Desarrollado por: <span class="author">JOSE RODOLFO ZAMBRANO CASTRO</span>
   </footer>
 
@@ -304,18 +409,49 @@
 
 <script>
   const taskInput = document.getElementById("taskInput");
+  const prioritySelect = document.getElementById("prioritySelect");
   const addTaskBtn = document.getElementById("addTaskBtn");
   const taskList = document.getElementById("taskList");
   const pendingCount = document.getElementById("pendingCount");
+  const totalCount = document.getElementById("totalCount");
   const filterButtons = document.querySelectorAll(".filter-btn");
+  const clearCompletedBtn =
+    document.getElementById("clearCompletedBtn");
 
   let currentFilter = "all";
 
-  let tasks = [
-    { id: 1, text: "Subir proyecto a GitHub", completed: false },
-    { id: 2, text: "Desplegar aplicación en Vercel", completed: false },
-    { id: 3, text: "Probar aplicación desde el teléfono", completed: true }
-  ];
+  let tasks =
+    JSON.parse(localStorage.getItem("cloudTaskTasks"));
+
+  if (!tasks) {
+    tasks = [
+      {
+        id: 1,
+        text: "Subir proyecto a GitHub",
+        completed: false,
+        priority: "alta"
+      },
+      {
+        id: 2,
+        text: "Desplegar aplicación en Vercel",
+        completed: false,
+        priority: "media"
+      },
+      {
+        id: 3,
+        text: "Probar aplicación desde el teléfono",
+        completed: true,
+        priority: "baja"
+      }
+    ];
+  }
+
+  function saveTasks() {
+    localStorage.setItem(
+      "cloudTaskTasks",
+      JSON.stringify(tasks)
+    );
+  }
 
   function renderTasks() {
     taskList.innerHTML = "";
@@ -332,8 +468,13 @@
     }
 
     filteredTasks.forEach(task => {
-      const li = document.createElement("li");
+      const priorityText = {
+        baja: "Baja",
+        media: "Media",
+        alta: "Alta"
+      };
 
+      const li = document.createElement("li");
       li.className = "task";
 
       if (task.completed) {
@@ -342,15 +483,25 @@
 
       li.innerHTML = `
         <div class="task-left">
+
           <input
             type="checkbox"
             ${task.completed ? "checked" : ""}
             onchange="toggleTask(${task.id})"
           >
 
-          <span class="task-text">
-            ${task.text}
-          </span>
+          <div class="task-info">
+
+            <span class="task-text">
+              ${task.text}
+            </span>
+
+            <span class="priority priority-${task.priority}">
+              Prioridad ${priorityText[task.priority]}
+            </span>
+
+          </div>
+
         </div>
 
         <button
@@ -364,13 +515,14 @@
       taskList.appendChild(li);
     });
 
-    updatePendingCount();
+    updateCounters();
+    saveTasks();
   }
 
   function addTask() {
     const text = taskInput.value.trim();
 
-    if (text === "") {
+    if (!text) {
       alert("Escribe una tarea.");
       return;
     }
@@ -378,10 +530,12 @@
     tasks.push({
       id: Date.now(),
       text,
-      completed: false
+      completed: false,
+      priority: prioritySelect.value
     });
 
     taskInput.value = "";
+    prioritySelect.value = "media";
 
     renderTasks();
   }
@@ -401,7 +555,21 @@
     renderTasks();
   }
 
-  function updatePendingCount() {
+  function clearCompletedTasks() {
+    if (!tasks.some(task => task.completed)) {
+      alert("No hay tareas completadas.");
+      return;
+    }
+
+    if (confirm("¿Eliminar todas las tareas completadas?")) {
+      tasks = tasks.filter(task => !task.completed);
+      renderTasks();
+    }
+  }
+
+  function updateCounters() {
+    totalCount.textContent = tasks.length;
+
     pendingCount.textContent =
       tasks.filter(task => !task.completed).length;
   }
@@ -411,6 +579,11 @@
   taskInput.addEventListener("keypress", event => {
     if (event.key === "Enter") addTask();
   });
+
+  clearCompletedBtn.addEventListener(
+    "click",
+    clearCompletedTasks
+  );
 
   filterButtons.forEach(button => {
     button.addEventListener("click", function() {
